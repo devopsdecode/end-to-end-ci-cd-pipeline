@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asset Details | AetherMarket</title>
+  <meta name="description" content="View pricing history, specifications, attributes, and purchase transactions for digital assets.">
+  <link rel="stylesheet" href="app.css">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-container">
+      <a href="index.html" class="logo">
+        <div class="logo-icon"><i class="fa-solid fa-cloud-bolt"></i></div>
+        AetherMarket
+      </a>
+
+      <div class="search-wrapper">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search items, collections, and accounts..." class="search-input global-search-input">
+      </div>
+
+      <nav class="nav-menu" id="nav-menu">
+        <a href="explore.html" class="nav-link">Explore</a>
+        <a href="create.html" class="nav-link">Create</a>
+        <a href="profile.html" class="nav-link">Profile</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn btn-primary" id="wallet-connect-btn">
+          <i class="fa-solid fa-wallet"></i> Connect Wallet
+        </button>
+
+        <div class="wallet-badge" id="wallet-details" style="display: none;">
+          <div class="wallet-info">
+            <span class="wallet-address" id="wallet-address-display">0x0000...0000</span>
+            <span class="wallet-balance" id="wallet-balance-display">0.00 ETH</span>
+          </div>
+          <a href="profile.html">
+            <div class="wallet-avatar"></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Detail Section -->
+  <section class="section" id="item-section">
+    <div class="container">
+      
+      <!-- Error State -->
+      <div id="error-card" style="display: none; text-align: center; padding: 80px 0;">
+        <i class="fa-solid fa-circle-exclamation" style="font-size: 4rem; color: var(--accent-pink); margin-bottom: 24px;"></i>
+        <h2 style="font-family: var(--font-display); font-size: 2rem;">Asset Not Found</h2>
+        <p style="color: var(--text-secondary); margin-top: 12px;">The token ID does not exist or may have been deleted.</p>
+        <a href="explore.html" class="btn btn-primary" style="margin-top: 24px;"><i class="fa-solid fa-arrow-left"></i> Return to Explore</a>
+      </div>
+
+      <!-- Main Grid Detail -->
+      <div class="item-grid" id="item-detail-grid">
+        <!-- Visuals Column (Left) -->
+        <div class="item-visuals">
+          <div class="item-img-card">
+            <img src="" id="item-image" alt="Collectible Asset">
+          </div>
+
+          <!-- Attributes Box -->
+          <div class="item-box">
+            <div class="item-box-title">
+              <i class="fa-solid fa-tags"></i> Attributes & Properties
+            </div>
+            <div class="attr-grid" id="item-attributes-grid">
+              <!-- Render attributes dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Info Column (Right) -->
+        <div>
+          <span class="card-tag" id="item-category-tag">Digital Collectible</span>
+          <h1 class="item-title" id="item-title-heading">Item Title</h1>
+          
+          <div class="item-creator-owner">
+            <div class="item-user-link">
+              <div class="item-user-avatar" style="background: var(--gradient-primary);"></div>
+              <div class="item-user-info">
+                <label>Creator</label>
+                <span id="item-creator-address">0x0000...0000</span>
+              </div>
+            </div>
+            <div class="item-user-link">
+              <div class="item-user-avatar" style="background: var(--gradient-pink);"></div>
+              <div class="item-user-info">
+                <label>Current Owner</label>
+                <span id="item-owner-address">0x0000...0000</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Purchase / Status Bar -->
+          <div class="item-box">
+            <div class="item-price-wrapper">
+              <label id="price-status-label">Current Price</label>
+              <div class="item-price-eth">
+                <i class="fa-brands fa-ethereum" style="color: var(--accent-cyan);"></i>
+                <span id="item-price-value">0.00</span>
+                <span>ETH</span>
+              </div>
+              <span class="item-price-usd" id="item-price-usd-value">($0.00)</span>
+            </div>
+
+            <!-- Ownership Conditional Buttons -->
+            <div class="item-actions" id="action-buttons-box">
+              <button class="btn btn-primary" style="flex: 1; padding: 16px;" id="buy-item-btn">
+                <i class="fa-solid fa-cart-shopping"></i> Buy Now
+              </button>
+              <button class="btn btn-secondary" style="flex: 1; padding: 16px;" id="bid-item-btn">
+                <i class="fa-solid fa-gavel"></i> Place a Bid
+              </button>
+            </div>
+            <div id="owned-notification" style="display: none; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--border-radius-sm); padding: 12px; text-align: center; color: var(--accent-neon); font-weight: 600;">
+              <i class="fa-solid fa-circle-check"></i> You own this digital asset
+            </div>
+          </div>
+
+          <!-- Price History Chart (Canvas) -->
+          <div class="item-box">
+            <div class="item-box-title">
+              <i class="fa-solid fa-chart-line"></i> Price History
+            </div>
+            <div style="width: 100%; height: 200px; position: relative;">
+              <canvas id="priceHistoryChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Description Box -->
+          <div class="item-box">
+            <div class="item-box-title">
+              <i class="fa-solid fa-align-left"></i> Description
+            </div>
+            <p id="item-description-text" style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
+              No description provided.
+            </p>
+          </div>
+
+          <!-- History / Bids List -->
+          <div class="item-box">
+            <div class="item-box-title">
+              <i class="fa-solid fa-list"></i> Activity Log & Bids
+            </div>
+            <div class="history-list" id="item-history-list">
+              <!-- Render history dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Purchase Modal Overlay -->
+  <div class="modal-overlay" id="purchase-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Checkout</h3>
+        <i class="fa-solid fa-xmark close-btn" id="close-purchase-modal"></i>
+      </div>
+
+      <div id="modal-checkout-form">
+        <div class="modal-details">
+          <div class="modal-item-info">
+            <img src="" id="checkout-modal-img" class="modal-item-img" alt="Thumbnail">
+            <div>
+              <span id="checkout-modal-title" class="modal-item-title">Title</span>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">Creator: <span id="checkout-modal-creator">0x</span></p>
+            </div>
+          </div>
+
+          <div class="modal-row">
+            <label>Asset Price</label>
+            <span><span id="checkout-modal-price">0.00</span> ETH</span>
+          </div>
+          <div class="modal-row">
+            <label>Estimated Gas Fee</label>
+            <span>0.0035 ETH</span>
+          </div>
+          <div class="modal-row" style="border-top: 1px solid var(--glass-border); padding-top: 10px; margin-top: 10px;">
+            <label>Total Payment</label>
+            <span style="color: var(--accent-cyan); font-weight: 700;"><span id="checkout-modal-total">0.00</span> ETH</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; padding: 14px;" id="confirm-purchase-btn">
+          <i class="fa-solid fa-credit-card"></i> Sign & Submit Payment
+        </button>
+      </div>
+
+      <!-- Simulated Progress Box -->
+      <div class="tx-progress-box" id="purchase-tx-box">
+        <div class="tx-loader"></div>
+        <h4 class="tx-status-text" id="purchase-status-label">Simulating contract...</h4>
+        <div class="tx-progress-bar">
+          <div class="tx-progress-fill" id="purchase-progress-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bidding Modal Overlay -->
+  <div class="modal-overlay" id="bidding-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Place a Bid</h3>
+        <i class="fa-solid fa-xmark close-btn" id="close-bidding-modal"></i>
+      </div>
+
+      <div id="modal-bid-form">
+        <div class="modal-details">
+          <div class="modal-item-info">
+            <img src="" id="bid-modal-img" class="modal-item-img" alt="Thumbnail">
+            <div>
+              <span id="bid-modal-title" class="modal-item-title">Title</span>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">Minimum Bid: <span id="bid-modal-min-bid">0.00</span> ETH</p>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 16px;">
+            <label for="bid-amount-input">Bid Offer (ETH)</label>
+            <input type="number" id="bid-amount-input" class="form-control" placeholder="Enter bid amount" step="0.01" min="0" required>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; padding: 14px;" id="confirm-bid-btn">
+          <i class="fa-solid fa-gavel"></i> Sign & Lock Bid
+        </button>
+      </div>
+
+      <!-- Simulated Progress Box -->
+      <div class="tx-progress-box" id="bidding-tx-box">
+        <div class="tx-loader"></div>
+        <h4 class="tx-status-text" id="bidding-status-label">Simulating contract...</h4>
+        <div class="tx-progress-bar">
+          <div class="tx-progress-fill" id="bidding-progress-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-logo-block">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><i class="fa-solid fa-cloud-bolt"></i></div>
+          AetherMarket
+        </a>
+        <p>The world's premium digital art marketplace for non-fungible tokens. Discover and collect unique digital assets.</p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Marketplace</h5>
+        <ul>
+          <li><a href="explore.html">All NFTs</a></li>
+          <li><a href="explore.html?category=art">Digital Art</a></li>
+          <li><a href="explore.html?category=gaming">Gaming</a></li>
+          <li><a href="explore.html?category=collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Gas Calculator</a></li>
+          <li><a href="#">Developer API</a></li>
+          <li><a href="#">Platform Stats</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press Kit</a></li>
+          <li><a href="#">Contact Support</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>&copy; 2026 AetherMarket. All rights reserved.</p>
+      <div class="social-links">
+        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#"><i class="fa-brands fa-discord"></i></a>
+        <a href="#"><i class="fa-brands fa-telegram"></i></a>
+        <a href="#"><i class="fa-brands fa-github"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Get query ID
+      const urlParams = new URLSearchParams(window.location.search);
+      const itemId = urlParams.get("id");
+
+      const errorCard = document.getElementById("error-card");
+      const detailGrid = document.getElementById("item-detail-grid");
+
+      if (!itemId) {
+        errorCard.style.display = "block";
+        detailGrid.style.display = "none";
+        return;
+      }
+
+      // Fetch state
+      const nfts = window.Marketplace.getNFTs();
+      const nft = nfts.find(n => n.id === itemId);
+      const wallet = window.Marketplace.getWallet();
+
+      if (!nft) {
+        errorCard.style.display = "block";
+        detailGrid.style.display = "none";
+        return;
+      }
+
+      // 2. Populate page items
+      document.getElementById("item-image").src = nft.image;
+      document.getElementById("item-title-heading").textContent = nft.title;
+      document.getElementById("item-category-tag").textContent = nft.category;
+      document.getElementById("item-creator-address").textContent = window.Marketplace.formatAddress(nft.creator);
+      document.getElementById("item-owner-address").textContent = window.Marketplace.formatAddress(nft.owner);
+      document.getElementById("item-price-value").textContent = nft.price.toFixed(2);
+      document.getElementById("item-price-usd-value").textContent = `($${(nft.price * window.Marketplace.ETH_USD_RATE).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})})`;
+      document.getElementById("item-description-text").textContent = nft.description || "No description provided.";
+
+      // 3. Attributes Grid Populating
+      const attrsGrid = document.getElementById("item-attributes-grid");
+      attrsGrid.innerHTML = "";
+      if (nft.attributes && nft.attributes.length > 0) {
+        nft.attributes.forEach(attr => {
+          const card = document.createElement("div");
+          card.className = "attr-card";
+          card.innerHTML = `
+            <div class="attr-type">${attr.trait_type}</div>
+            <div class="attr-value">${attr.value}</div>
+          `;
+          attrsGrid.appendChild(card);
+        });
+      } else {
+        attrsGrid.innerHTML = `<p style="grid-column:1/-1; font-size: 0.85rem; color: var(--text-muted);">No properties defined for this asset.</p>`;
+      }
+
+      // 4. History rendering
+      const historyList = document.getElementById("item-history-list");
+      
+      function renderHistory() {
+        historyList.innerHTML = "";
+        
+        // Render Bids first (if any)
+        if (nft.bids && nft.bids.length > 0) {
+          // Sort bids descending
+          const sortedBids = [...nft.bids].sort((a,b) => b.amount - a.amount);
+          sortedBids.forEach(bid => {
+            const item = document.createElement("div");
+            item.className = "history-item";
+            item.innerHTML = `
+              <div class="history-info">
+                <i class="fa-solid fa-gavel"></i>
+                <div class="history-text">
+                  Bid placed by <span>${window.Marketplace.formatAddress(bid.bidder)}</span>
+                </div>
+              </div>
+              <div>
+                <strong style="color: var(--accent-cyan);">${bid.amount.toFixed(2)} ETH</strong>
+                <div class="history-time">${bid.time}</div>
+              </div>
+            `;
+            historyList.appendChild(item);
+          });
+        }
+
+        // Render Transaction Logs
+        if (nft.history && nft.history.length > 0) {
+          nft.history.forEach(log => {
+            let icon = "fa-hammer";
+            let actionText = "";
+
+            if (log.event === "Minted") {
+              icon = "fa-hammer";
+              actionText = `Minted by <span>${window.Marketplace.formatAddress(log.to)}</span>`;
+            } else if (log.event === "Sale") {
+              icon = "fa-cart-shopping";
+              actionText = `Purchased by <span>${window.Marketplace.formatAddress(log.to)}</span> from <span>${window.Marketplace.formatAddress(log.from)}</span>`;
+            } else if (log.event === "Bid") {
+              icon = "fa-hand-holding-dollar";
+              actionText = `Bid offer of <span>${log.price} ETH</span> submitted by <span>${window.Marketplace.formatAddress(log.from)}</span>`;
+            }
+
+            const item = document.createElement("div");
+            item.className = "history-item";
+            item.innerHTML = `
+              <div class="history-info">
+                <i class="fa-solid ${icon}"></i>
+                <div class="history-text">${actionText}</div>
+              </div>
+              <div>
+                <strong>${log.price > 0 ? log.price.toFixed(2) + " ETH" : "—"}</strong>
+                <div class="history-time">${log.date}</div>
+              </div>
+            `;
+            historyList.appendChild(item);
+          });
+        }
+      }
+
+      renderHistory();
+
+      // 5. Ownership Conditional Display
+      const actionBox = document.getElementById("action-buttons-box");
+      const ownedBox = document.getElementById("owned-notification");
+
+      function updateOwnershipUI() {
+        if (wallet.connected && nft.owner.toLowerCase() === wallet.address.toLowerCase()) {
+          actionBox.style.display = "none";
+          ownedBox.style.display = "block";
+          document.getElementById("price-status-label").textContent = "Owned Value";
+        } else {
+          actionBox.style.display = "flex";
+          ownedBox.style.display = "none";
+          document.getElementById("price-status-label").textContent = nft.status === 'has_bids' ? "Highest Bid" : "Current Price";
+        }
+      }
+      
+      updateOwnershipUI();
+
+      // 6. Draw Price History Chart (Chart.js)
+      const ctx = document.getElementById('priceHistoryChart').getContext('2d');
+      // generate dummy data based on price
+      const baseline = nft.price * 0.5;
+      const mid = nft.price * 0.8;
+      const historyLabels = ['May 20', 'May 24', 'May 28', 'Jun 01', 'Jun 06'];
+      const historyPrices = [baseline, baseline * 1.2, mid, mid * 1.15, nft.price];
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: historyLabels,
+          datasets: [{
+            label: 'Price (ETH)',
+            data: historyPrices,
+            borderColor: '#00f2fe',
+            borderWidth: 3,
+            pointBackgroundColor: '#4facfe',
+            pointHoverRadius: 6,
+            tension: 0.4,
+            fill: false
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8' }
+            },
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8' }
+            }
+          }
+        }
+      });
+
+      // 7. Modals Setup
+      const buyModal = document.getElementById("purchase-modal");
+      const closeBuyBtn = document.getElementById("close-purchase-modal");
+      const buyBtn = document.getElementById("buy-item-btn");
+      
+      const bidModal = document.getElementById("bidding-modal");
+      const closeBidBtn = document.getElementById("close-bidding-modal");
+      const bidBtn = document.getElementById("bid-item-btn");
+
+      // Purchase triggers
+      buyBtn.addEventListener("click", () => {
+        if (!wallet.connected) {
+          alert("Please connect your wallet first.");
+          return;
+        }
+        
+        document.getElementById("checkout-modal-img").src = nft.image;
+        document.getElementById("checkout-modal-title").textContent = nft.title;
+        document.getElementById("checkout-modal-creator").textContent = window.Marketplace.formatAddress(nft.creator);
+        document.getElementById("checkout-modal-price").textContent = nft.price.toFixed(2);
+        document.getElementById("checkout-modal-total").textContent = (nft.price + 0.0035).toFixed(4);
+
+        document.getElementById("modal-checkout-form").style.display = "block";
+        document.getElementById("purchase-tx-box").style.display = "none";
+        buyModal.style.display = "flex";
+      });
+
+      closeBuyBtn.addEventListener("click", () => {
+        buyModal.style.display = "none";
+      });
+
+      // Bidding triggers
+      bidBtn.addEventListener("click", () => {
+        if (!wallet.connected) {
+          alert("Please connect your wallet first.");
+          return;
+        }
+
+        const highestBid = nft.bids && nft.bids.length > 0 
+          ? Math.max(...nft.bids.map(b => b.amount)) 
+          : nft.price;
+
+        document.getElementById("bid-modal-img").src = nft.image;
+        document.getElementById("bid-modal-title").textContent = nft.title;
+        document.getElementById("bid-modal-min-bid").textContent = highestBid.toFixed(2);
+        document.getElementById("bid-amount-input").min = (highestBid + 0.01).toFixed(2);
+        document.getElementById("bid-amount-input").value = (highestBid + 0.1).toFixed(2);
+
+        document.getElementById("modal-bid-form").style.display = "block";
+        document.getElementById("bidding-tx-box").style.display = "none";
+        bidModal.style.display = "flex";
+      });
+
+      closeBidBtn.addEventListener("click", () => {
+        bidModal.style.display = "none";
+      });
+
+      // 8. Confirm Purchase Transaction Simulation
+      const confirmPurchaseBtn = document.getElementById("confirm-purchase-btn");
+      const purchaseCheckoutForm = document.getElementById("modal-checkout-form");
+      const purchaseTxBox = document.getElementById("purchase-tx-box");
+      const purchaseStatusLabel = document.getElementById("purchase-status-label");
+      const purchaseProgressFill = document.getElementById("purchase-progress-fill");
+
+      confirmPurchaseBtn.addEventListener("click", () => {
+        purchaseCheckoutForm.style.display = "none";
+        purchaseTxBox.style.display = "block";
+
+        window.Marketplace.buyNFT(nft.id, 
+          // Progress Callback
+          (msg, pct) => {
+            purchaseStatusLabel.textContent = msg;
+            purchaseProgressFill.style.width = pct + "%";
+          },
+          // Success Callback
+          (updatedNft) => {
+            purchaseStatusLabel.textContent = "Transaction Completed Successfully!";
+            purchaseProgressFill.style.width = "100%";
+            
+            confetti({
+              particleCount: 150,
+              spread: 60,
+              origin: { y: 0.6 }
+            });
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 1800);
+          },
+          // Error Callback
+          (errMsg) => {
+            buyModal.style.display = "none";
+            alert(errMsg);
+          }
+        );
+      });
+
+      // 9. Confirm Bid Transaction Simulation
+      const confirmBidBtn = document.getElementById("confirm-bid-btn");
+      const bidForm = document.getElementById("modal-bid-form");
+      const biddingTxBox = document.getElementById("bidding-tx-box");
+      const biddingStatusLabel = document.getElementById("bidding-status-label");
+      const biddingProgressFill = document.getElementById("bidding-progress-fill");
+      const bidAmountInput = document.getElementById("bid-amount-input");
+
+      confirmBidBtn.addEventListener("click", () => {
+        const bidVal = parseFloat(bidAmountInput.value);
+        if (isNaN(bidVal) || bidVal <= 0) {
+          alert("Please enter a valid bid amount.");
+          return;
+        }
+
+        bidForm.style.display = "none";
+        biddingTxBox.style.display = "block";
+
+        window.Marketplace.placeBid(nft.id, bidVal,
+          // Progress Callback
+          (msg, pct) => {
+            biddingStatusLabel.textContent = msg;
+            biddingProgressFill.style.width = pct + "%";
+          },
+          // Success Callback
+          (updatedNft) => {
+            biddingStatusLabel.textContent = "Bid Placed & Locked Successfully!";
+            biddingProgressFill.style.width = "100%";
+
+            confetti({
+              particleCount: 80,
+              spread: 50,
+              origin: { y: 0.6 }
+            });
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 1800);
+          },
+          // Error Callback
+          (errMsg) => {
+            bidModal.style.display = "none";
+            alert(errMsg);
+          }
+        );
+      });
+    });
+  </script>
+</body>
+</html>

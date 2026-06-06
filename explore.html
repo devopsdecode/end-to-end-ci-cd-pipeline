@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Marketplace | AetherMarket</title>
+  <meta name="description" content="Browse, filter, and discover unique digital collectibles on AetherMarket.">
+  <link rel="stylesheet" href="app.css">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-container">
+      <a href="index.html" class="logo">
+        <div class="logo-icon"><i class="fa-solid fa-cloud-bolt"></i></div>
+        AetherMarket
+      </a>
+
+      <div class="search-wrapper">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search items, collections, and accounts..." class="search-input global-search-input" id="explore-search-bar">
+      </div>
+
+      <nav class="nav-menu" id="nav-menu">
+        <a href="explore.html" class="nav-link active">Explore</a>
+        <a href="create.html" class="nav-link">Create</a>
+        <a href="profile.html" class="nav-link">Profile</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn btn-primary" id="wallet-connect-btn">
+          <i class="fa-solid fa-wallet"></i> Connect Wallet
+        </button>
+
+        <div class="wallet-badge" id="wallet-details" style="display: none;">
+          <div class="wallet-info">
+            <span class="wallet-address" id="wallet-address-display">0x0000...0000</span>
+            <span class="wallet-balance" id="wallet-balance-display">0.00 ETH</span>
+          </div>
+          <a href="profile.html">
+            <div class="wallet-avatar"></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Explorer Section -->
+  <section class="section">
+    <div class="container">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h1 class="section-title" style="margin-bottom: 0;">Explore <span>Marketplace</span></h1>
+        
+        <!-- Quick Stats / Count -->
+        <span id="results-count" style="color: var(--text-secondary); font-size: 0.95rem;">Loading assets...</span>
+      </div>
+
+      <div class="explore-layout">
+        <!-- Sidebar Filters -->
+        <aside class="filter-sidebar">
+          <div class="filter-group">
+            <div class="filter-title">
+              Status
+            </div>
+            <div class="filter-options">
+              <label class="checkbox-label">
+                <input type="checkbox" id="status-buy-now" checked> Buy Now
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="status-has-bids"> Has Bids
+              </label>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <div class="filter-title">
+              Categories
+            </div>
+            <div class="filter-options">
+              <label class="checkbox-label">
+                <input type="checkbox" class="category-checkbox" value="art"> Art
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="category-checkbox" value="gaming"> Gaming
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="category-checkbox" value="photography"> Photography
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="category-checkbox" value="collectibles"> Collectibles
+              </label>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <div class="filter-title">
+              Price Range
+            </div>
+            <div class="price-inputs">
+              <input type="number" placeholder="Min" id="price-min" class="price-input" step="0.01" min="0">
+              <input type="number" placeholder="Max" id="price-max" class="price-input" step="0.01" min="0">
+            </div>
+            <button class="btn btn-secondary" style="width: 100%; padding: 8px;" id="apply-price-btn">Apply Price</button>
+          </div>
+
+          <div class="filter-group">
+            <div class="filter-title">
+              Sort By
+            </div>
+            <select id="sort-selector" class="form-control" style="padding: 10px; font-size: 0.9rem; border-radius: var(--border-radius-sm);">
+              <option value="recent">Recently Minted</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="popular">Popular (Most Liked)</option>
+            </select>
+          </div>
+
+          <button class="btn btn-secondary" style="width: 100%; border-color: var(--accent-pink); color: var(--accent-pink);" id="reset-filters-btn">
+            <i class="fa-solid fa-arrows-rotate"></i> Reset Filters
+          </button>
+        </aside>
+
+        <!-- Grid Listings -->
+        <main>
+          <div class="nft-grid" id="explore-grid">
+            <!-- Dynamic listings -->
+          </div>
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-logo-block">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><i class="fa-solid fa-cloud-bolt"></i></div>
+          AetherMarket
+        </a>
+        <p>The world's premium digital art marketplace for non-fungible tokens. Discover and collect unique digital assets.</p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Marketplace</h5>
+        <ul>
+          <li><a href="explore.html">All NFTs</a></li>
+          <li><a href="explore.html?category=art">Digital Art</a></li>
+          <li><a href="explore.html?category=gaming">Gaming</a></li>
+          <li><a href="explore.html?category=collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Gas Calculator</a></li>
+          <li><a href="#">Developer API</a></li>
+          <li><a href="#">Platform Stats</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press Kit</a></li>
+          <li><a href="#">Contact Support</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>&copy; 2026 AetherMarket. All rights reserved.</p>
+      <div class="social-links">
+        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#"><i class="fa-brands fa-discord"></i></a>
+        <a href="#"><i class="fa-brands fa-telegram"></i></a>
+        <a href="#"><i class="fa-brands fa-github"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const exploreGrid = document.getElementById("explore-grid");
+      const resultsCount = document.getElementById("results-count");
+      
+      // Filter Inputs
+      const searchBar = document.getElementById("explore-search-bar");
+      const statusBuyNow = document.getElementById("status-buy-now");
+      const statusHasBids = document.getElementById("status-has-bids");
+      const categoryCheckboxes = document.querySelectorAll(".category-checkbox");
+      const priceMin = document.getElementById("price-min");
+      const priceMax = document.getElementById("price-max");
+      const applyPriceBtn = document.getElementById("apply-price-btn");
+      const sortSelector = document.getElementById("sort-selector");
+      const resetFiltersBtn = document.getElementById("reset-filters-btn");
+
+      // Load query parameters if any
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialSearch = urlParams.get("search");
+      const initialCategory = urlParams.get("category");
+
+      if (initialSearch) {
+        searchBar.value = initialSearch;
+      }
+      if (initialCategory) {
+        categoryCheckboxes.forEach(cb => {
+          if (cb.value === initialCategory) {
+            cb.checked = true;
+          }
+        });
+      }
+
+      // Main Filter Function
+      function filterAndRender() {
+        if (!exploreGrid) return;
+
+        const nfts = window.Marketplace.getNFTs();
+        const wallet = window.Marketplace.getWallet();
+        
+        let filtered = [...nfts];
+
+        // 1. Search Query
+        const query = searchBar.value.trim().toLowerCase();
+        if (query) {
+          filtered = filtered.filter(nft => 
+            nft.title.toLowerCase().includes(query) || 
+            nft.description.toLowerCase().includes(query) ||
+            nft.creator.toLowerCase().includes(query)
+          );
+        }
+
+        // 2. Status Filters
+        const showBuyNow = statusBuyNow.checked;
+        const showHasBids = statusHasBids.checked;
+        if (showBuyNow || showHasBids) {
+          filtered = filtered.filter(nft => {
+            if (showBuyNow && nft.status === 'buy_now') return true;
+            if (showHasBids && (nft.status === 'has_bids' || (nft.bids && nft.bids.length > 0))) return true;
+            return false;
+          });
+        }
+
+        // 3. Category Filters
+        const activeCategories = Array.from(categoryCheckboxes)
+          .filter(cb => cb.checked)
+          .map(cb => cb.value);
+        
+        if (activeCategories.length > 0) {
+          filtered = filtered.filter(nft => activeCategories.includes(nft.category));
+        }
+
+        // 4. Price Filters
+        const minVal = parseFloat(priceMin.value);
+        const maxVal = parseFloat(priceMax.value);
+        if (!isNaN(minVal)) {
+          filtered = filtered.filter(nft => nft.price >= minVal);
+        }
+        if (!isNaN(maxVal)) {
+          filtered = filtered.filter(nft => nft.price <= maxVal);
+        }
+
+        // 5. Sorting
+        const sortMode = sortSelector.value;
+        if (sortMode === 'price-low') {
+          filtered.sort((a, b) => a.price - b.price);
+        } else if (sortMode === 'price-high') {
+          filtered.sort((a, b) => b.price - a.price);
+        } else if (sortMode === 'popular') {
+          filtered.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+        } else {
+          // 'recent' sorting, default is order of array or date
+          // For prototype we rely on index (since user mints are unshifted, they are naturally at start)
+        }
+
+        // Clear grid and render cards
+        exploreGrid.innerHTML = "";
+        resultsCount.textContent = `Showing ${filtered.length} of ${nfts.length} assets`;
+
+        filtered.forEach(nft => {
+          const isLiked = nft.likedBy && nft.likedBy.includes(wallet.address);
+          const card = document.createElement("div");
+          card.className = "nft-card";
+          card.innerHTML = `
+            <div class="card-img-wrapper" style="cursor: pointer;" onclick="window.location.href='item.html?id=${nft.id}'">
+              <img src="${nft.image}" alt="${nft.title}" class="card-img">
+            </div>
+            <button class="like-btn ${isLiked ? 'liked' : ''}" data-id="${nft.id}">
+              <i class="fa-${isLiked ? 'solid' : 'regular'} fa-heart"></i>
+              <span>${nft.likes || 0}</span>
+            </button>
+            <div class="card-body">
+              <span class="card-tag">${nft.category}</span>
+              <h3 class="card-title" style="cursor: pointer;" onclick="window.location.href='item.html?id=${nft.id}'">${nft.title}</h3>
+              <div class="card-meta">
+                <div class="card-creator">
+                  <div class="creator-avatar"></div>
+                  <span class="creator-name">${window.Marketplace.formatAddress(nft.creator)}</span>
+                </div>
+                <div class="card-price">
+                  <label>${nft.status === 'has_bids' ? 'Highest Bid' : 'Price'}</label>
+                  <span>${nft.price.toFixed(2)} ETH</span>
+                </div>
+              </div>
+            </div>
+          `;
+
+          // Like Action
+          card.querySelector(".like-btn").addEventListener("click", (e) => {
+            e.stopPropagation();
+            const result = window.Marketplace.likeNFT(nft.id);
+            if (result) {
+              filterAndRender();
+            }
+          });
+
+          exploreGrid.appendChild(card);
+        });
+
+        if (filtered.length === 0) {
+          exploreGrid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 80px 0; border: 1px dashed var(--glass-border); border-radius: var(--border-radius-md);">
+              <i class="fa-regular fa-folder-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+              <h3 style="font-family: var(--font-display); font-size: 1.3rem; margin-bottom: 8px;">No matching assets found</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem;">Try resetting your filters or adjusting your price parameters.</p>
+            </div>
+          `;
+        }
+      }
+
+      // Event Listeners for Filters
+      searchBar.addEventListener("input", filterAndRender);
+      statusBuyNow.addEventListener("change", filterAndRender);
+      statusHasBids.addEventListener("change", filterAndRender);
+      categoryCheckboxes.forEach(cb => cb.addEventListener("change", filterAndRender));
+      applyPriceBtn.addEventListener("click", filterAndRender);
+      sortSelector.addEventListener("change", filterAndRender);
+
+      resetFiltersBtn.addEventListener("click", () => {
+        searchBar.value = "";
+        statusBuyNow.checked = true;
+        statusHasBids.checked = false;
+        categoryCheckboxes.forEach(cb => cb.checked = false);
+        priceMin.value = "";
+        priceMax.value = "";
+        sortSelector.value = "recent";
+        filterAndRender();
+      });
+
+      // Initial Render
+      filterAndRender();
+    });
+  </script>
+</body>
+</html>

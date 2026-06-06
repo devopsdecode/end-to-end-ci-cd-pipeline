@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AetherMarket | Premium NFT Marketplace</title>
+  <meta name="description" content="Discover, collect, and sell extraordinary NFTs on the world's premier digital art marketplace.">
+  <link rel="stylesheet" href="app.css">
+  <!-- FontAwesome for Web3 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="container nav-container">
+      <a href="index.html" class="logo">
+        <div class="logo-icon"><i class="fa-solid fa-cloud-bolt"></i></div>
+        AetherMarket
+      </a>
+
+      <div class="search-wrapper">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search items, collections, and accounts..." class="search-input global-search-input">
+      </div>
+
+      <nav class="nav-menu" id="nav-menu">
+        <a href="explore.html" class="nav-link">Explore</a>
+        <a href="create.html" class="nav-link">Create</a>
+        <a href="profile.html" class="nav-link">Profile</a>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Connect Wallet Button -->
+        <button class="btn btn-primary" id="wallet-connect-btn">
+          <i class="fa-solid fa-wallet"></i> Connect Wallet
+        </button>
+
+        <!-- Wallet Connected Badging -->
+        <div class="wallet-badge" id="wallet-details" style="display: none;">
+          <div class="wallet-info">
+            <span class="wallet-address" id="wallet-address-display">0x0000...0000</span>
+            <span class="wallet-balance" id="wallet-balance-display">0.00 ETH</span>
+          </div>
+          <a href="profile.html">
+            <div class="wallet-avatar"></div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button class="btn-icon" id="mobile-menu-toggle" style="display: none;">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="section hero-section">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <h1>Discover, Collect, & Sell Extraordinary <span>NFTs</span></h1>
+        <p>AetherMarket is the premier decentralized platform for digital creators, collectors, and gamers. Trade with zero hassle, instant settlements, and premium visual collections.</p>
+        <div class="hero-actions">
+          <a href="explore.html" class="btn btn-primary"><i class="fa-solid fa-compass"></i> Explore Marketplace</a>
+          <a href="create.html" class="btn btn-secondary"><i class="fa-solid fa-circle-plus"></i> Create NFT</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <h3>45k+</h3>
+            <p>Artwork Assets</p>
+          </div>
+          <div class="stat-item">
+            <h3>120k+</h3>
+            <p>Auctions Won</p>
+          </div>
+          <div class="stat-item">
+            <h3>8k+</h3>
+            <p>Active Creators</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Featured NFT Card (dynamic preview) -->
+      <div class="hero-preview">
+        <div class="preview-card" id="featured-hero-card" style="cursor: pointer;">
+          <img src="assets/ether_crystal.png" alt="Featured NFT" class="preview-img">
+          <div class="preview-details">
+            <div class="preview-info">
+              <h4>Aetherium Core #0047</h4>
+              <p><i class="fa-solid fa-shield-halved"></i> Verified Asset</p>
+            </div>
+            <div class="preview-price">
+              <label>Current Bid</label>
+              <span>5.50 ETH</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trending Listings Section -->
+  <section class="section trending-section" style="border-top: 1px solid var(--glass-border);">
+    <div class="container">
+      <h2 class="section-title">Trending <span>Collections</span></h2>
+
+      <div class="category-filters">
+        <button class="cat-btn active" data-category="all">All Items</button>
+        <button class="cat-btn" data-category="art">Digital Art</button>
+        <button class="cat-btn" data-category="gaming">Gaming</button>
+        <button class="cat-btn" data-category="photography">Photography</button>
+        <button class="cat-btn" data-category="collectibles">Collectibles</button>
+      </div>
+
+      <div class="nft-grid" id="trending-grid">
+        <!-- Rendered dynamically via app.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Leaderboards Section -->
+  <section class="section leaderboard-section" style="border-top: 1px solid var(--glass-border); background: rgba(18, 19, 26, 0.3);">
+    <div class="container">
+      <h2 class="section-title">Top Collections <span>Leaderboard</span></h2>
+
+      <div class="leaderboard-table">
+        <div class="leaderboard-row leaderboard-header">
+          <div class="leaderboard-col">Rank</div>
+          <div class="leaderboard-col">Collection</div>
+          <div class="leaderboard-col">Volume</div>
+          <div class="leaderboard-col">24h %</div>
+          <div class="leaderboard-col">Floor Price</div>
+        </div>
+
+        <div class="leaderboard-row">
+          <div class="leaderboard-col leaderboard-rank">1</div>
+          <div class="leaderboard-col leaderboard-collection">
+            <img src="assets/cyberpunk_samurai.png" alt="Neon Tokyo Ronin">
+            <div class="collection-info">
+              <h4>Neon Tokyo Ronin</h4>
+              <span>Created by 0xNeoTokyoArt</span>
+            </div>
+          </div>
+          <div class="leaderboard-col"><strong>1,240 ETH</strong></div>
+          <div class="leaderboard-col change-positive">+18.4%</div>
+          <div class="leaderboard-col">1.50 ETH</div>
+        </div>
+
+        <div class="leaderboard-row">
+          <div class="leaderboard-col leaderboard-rank">2</div>
+          <div class="leaderboard-col leaderboard-collection">
+            <img src="assets/ether_crystal.png" alt="Aetherium Relics">
+            <div class="collection-info">
+              <h4>Aetherium Relics</h4>
+              <span>Created by 0xCrystalMage</span>
+            </div>
+          </div>
+          <div class="leaderboard-col"><strong>984 ETH</strong></div>
+          <div class="leaderboard-col change-positive">+44.5%</div>
+          <div class="leaderboard-col">4.20 ETH</div>
+        </div>
+
+        <div class="leaderboard-row">
+          <div class="leaderboard-col leaderboard-rank">3</div>
+          <div class="leaderboard-col leaderboard-collection">
+            <img src="assets/cyber_ape.png" alt="Street Cyber Ape Club">
+            <div class="collection-info">
+              <h4>Street Cyber Ape Club</h4>
+              <span>Created by 0xStreetCyber</span>
+            </div>
+          </div>
+          <div class="leaderboard-col"><strong>812 ETH</strong></div>
+          <div class="leaderboard-col" style="color: var(--accent-pink); font-weight:600;">-2.3%</div>
+          <div class="leaderboard-col">1.95 ETH</div>
+        </div>
+
+        <div class="leaderboard-row">
+          <div class="leaderboard-col leaderboard-rank">4</div>
+          <div class="leaderboard-col leaderboard-collection">
+            <img src="assets/cosmic_nebula.png" alt="Deep Space Entities">
+            <div class="collection-info">
+              <h4>Deep Space Entities</h4>
+              <span>Created by 0xGalaxyMaker</span>
+            </div>
+          </div>
+          <div class="leaderboard-col"><strong>655 ETH</strong></div>
+          <div class="leaderboard-col change-positive">+24.1%</div>
+          <div class="leaderboard-col">2.80 ETH</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner Section -->
+  <section class="section cta-section">
+    <div class="container">
+      <div style="background: linear-gradient(135deg, rgba(18, 19, 26, 0.8) 0%, rgba(10, 11, 16, 0.9) 100%), url('assets/ether_crystal.png'); background-size: cover; background-position: center; border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 80px 40px; text-align: center; box-shadow: var(--shadow-md); position: relative; overflow: hidden;">
+        <div style="max-width: 650px; margin: 0 auto; z-index: 5; position: relative;">
+          <h2 style="font-family: var(--font-display); font-size: 2.5rem; font-weight: 800; margin-bottom: 20px;">Join the Digital Frontier</h2>
+          <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 36px;">Set up your wallet, create collections, mint unique assets, and list them for sale on our high-speed marketplace ecosystem.</p>
+          <button class="btn btn-primary" onclick="window.Marketplace.connectWallet()"><i class="fa-solid fa-wallet"></i> Connect Wallet Now</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-logo-block">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><i class="fa-solid fa-cloud-bolt"></i></div>
+          AetherMarket
+        </a>
+        <p>The world's premium digital art marketplace for non-fungible tokens. Discover and collect unique digital assets.</p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Marketplace</h5>
+        <ul>
+          <li><a href="explore.html">All NFTs</a></li>
+          <li><a href="explore.html?category=art">Digital Art</a></li>
+          <li><a href="explore.html?category=gaming">Gaming</a></li>
+          <li><a href="explore.html?category=collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Gas Calculator</a></li>
+          <li><a href="#">Developer API</a></li>
+          <li><a href="#">Platform Stats</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press Kit</a></li>
+          <li><a href="#">Contact Support</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>&copy; 2026 AetherMarket. All rights reserved.</p>
+      <div class="social-links">
+        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#"><i class="fa-brands fa-discord"></i></a>
+        <a href="#"><i class="fa-brands fa-telegram"></i></a>
+        <a href="#"><i class="fa-brands fa-github"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Direct clicks on hero preview card to item details page
+      const heroCard = document.getElementById("featured-hero-card");
+      if (heroCard) {
+        heroCard.addEventListener("click", () => {
+          window.location.href = "item.html?id=aether-core";
+        });
+      }
+
+      // Populate Trending listings
+      const trendingGrid = document.getElementById("trending-grid");
+      const categoryButtons = document.querySelectorAll(".cat-btn");
+      
+      let currentCategory = "all";
+
+      function renderTrending() {
+        if (!trendingGrid) return;
+        trendingGrid.innerHTML = "";
+        
+        const nfts = window.Marketplace.getNFTs();
+        const wallet = window.Marketplace.getWallet();
+
+        // Filter based on category
+        let filteredNFTs = nfts;
+        if (currentCategory !== "all") {
+          filteredNFTs = nfts.filter(n => n.category === currentCategory);
+        }
+
+        // Show max 8 items on home
+        filteredNFTs.slice(0, 8).forEach(nft => {
+          const isLiked = nft.likedBy && nft.likedBy.includes(wallet.address);
+          const card = document.createElement("div");
+          card.className = "nft-card";
+          card.innerHTML = `
+            <div class="card-img-wrapper" style="cursor: pointer;" onclick="window.location.href='item.html?id=${nft.id}'">
+              <img src="${nft.image}" alt="${nft.title}" class="card-img">
+            </div>
+            <button class="like-btn ${isLiked ? 'liked' : ''}" data-id="${nft.id}">
+              <i class="fa-${isLiked ? 'solid' : 'regular'} fa-heart"></i>
+              <span>${nft.likes || 0}</span>
+            </button>
+            <div class="card-body">
+              <span class="card-tag">${nft.category}</span>
+              <h3 class="card-title" style="cursor: pointer;" onclick="window.location.href='item.html?id=${nft.id}'">${nft.title}</h3>
+              <div class="card-meta">
+                <div class="card-creator">
+                  <div class="creator-avatar"></div>
+                  <span class="creator-name">${window.Marketplace.formatAddress(nft.creator)}</span>
+                </div>
+                <div class="card-price">
+                  <label>Price</label>
+                  <span>${nft.price.toFixed(2)} ETH</span>
+                </div>
+              </div>
+            </div>
+          `;
+
+          // Add click listener for like button
+          const likeBtn = card.querySelector(".like-btn");
+          likeBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const result = window.Marketplace.likeNFT(nft.id);
+            if (result) {
+              renderTrending();
+            }
+          });
+
+          trendingGrid.appendChild(card);
+        });
+
+        if (filteredNFTs.length === 0) {
+          trendingGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px 0;">No items found in this category.</p>`;
+        }
+      }
+
+      // Add click listener for category buttons
+      categoryButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          categoryButtons.forEach(b => b.classList.remove("active"));
+          e.target.classList.add("active");
+          currentCategory = e.target.getAttribute("data-category");
+          renderTrending();
+        });
+      });
+
+      // Initialize render
+      renderTrending();
+    });
+  </script>
+</body>
+</html>

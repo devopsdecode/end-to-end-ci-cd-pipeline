@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create NFT Studio | AetherMarket</title>
+  <meta name="description" content="Mint new NFTs onto the digital ledger using AetherMarket's premium creator studio.">
+  <link rel="stylesheet" href="app.css">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-container">
+      <a href="index.html" class="logo">
+        <div class="logo-icon"><i class="fa-solid fa-cloud-bolt"></i></div>
+        AetherMarket
+      </a>
+
+      <div class="search-wrapper">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search items, collections, and accounts..." class="search-input global-search-input">
+      </div>
+
+      <nav class="nav-menu" id="nav-menu">
+        <a href="explore.html" class="nav-link">Explore</a>
+        <a href="create.html" class="nav-link active">Create</a>
+        <a href="profile.html" class="nav-link">Profile</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn btn-primary" id="wallet-connect-btn">
+          <i class="fa-solid fa-wallet"></i> Connect Wallet
+        </button>
+
+        <div class="wallet-badge" id="wallet-details" style="display: none;">
+          <div class="wallet-info">
+            <span class="wallet-address" id="wallet-address-display">0x0000...0000</span>
+            <span class="wallet-balance" id="wallet-balance-display">0.00 ETH</span>
+          </div>
+          <a href="profile.html">
+            <div class="wallet-avatar"></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Creator Section -->
+  <section class="section">
+    <div class="container" style="max-width: 960px;">
+      <h1 class="section-title">Create New <span>Digital Item</span></h1>
+      <p style="color: var(--text-secondary); margin-bottom: 40px; margin-top: -30px;">Deploy your artwork onto the simulated Ethereum blockchain. Upload your image file, set pricing rules, add custom attributes, and list it immediately.</p>
+
+      <!-- Connection Alert -->
+      <div id="connect-warning-box" style="display: flex; align-items: center; gap: 16px; background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.2); border-radius: var(--border-radius-md); padding: 16px; margin-bottom: 32px;">
+        <i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-pink); font-size: 1.5rem;"></i>
+        <div>
+          <h4 style="font-family: var(--font-display); font-weight: 700;">Wallet Disconnected</h4>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">You must connect your Web3 wallet using the header button to mint items.</p>
+        </div>
+      </div>
+
+      <form id="mint-nft-form" style="display: none;">
+        <div class="create-grid">
+          <!-- Image upload column -->
+          <div>
+            <label style="display: block; font-family: var(--font-display); font-weight: 600; margin-bottom: 8px;">Upload File</label>
+            <div class="upload-zone" id="file-dropzone">
+              <input type="file" id="nft-file-input" accept="image/*" style="display: none;">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <p>Drag & drop image file here</p>
+              <span>Supports JPG, PNG, GIF, SVG (Max 5MB)</span>
+              <img src="" id="file-preview-img" class="upload-preview-img" alt="Preview Image">
+            </div>
+            <p id="file-error" style="color: var(--accent-pink); font-size: 0.85rem; margin-top: 8px; display: none;">Please upload a file</p>
+          </div>
+
+          <!-- Fields column -->
+          <div>
+            <div class="form-group">
+              <label for="nft-title">Item Title *</label>
+              <input type="text" id="nft-title" class="form-control" placeholder="e.g. Cyber Samurai #01" required>
+            </div>
+
+            <div class="form-group">
+              <label for="nft-description">Description</label>
+              <textarea id="nft-description" class="form-control" rows="4" placeholder="Provide a detailed description of your digital creation. This will appear on the item details page."></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="nft-price">List Price (ETH) *</label>
+                <input type="number" id="nft-price" class="form-control" placeholder="e.g. 0.5" step="0.01" min="0" required>
+              </div>
+
+              <div class="form-group">
+                <label for="nft-category">Category *</label>
+                <select id="nft-category" class="form-control" required>
+                  <option value="" disabled selected>Select Category</option>
+                  <option value="art">Digital Art</option>
+                  <option value="gaming">Gaming</option>
+                  <option value="photography">Photography</option>
+                  <option value="collectibles">Collectibles</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="nft-royalty">Royalty Split (%)</label>
+              <input type="number" id="nft-royalty" class="form-control" placeholder="e.g. 5" min="0" max="25" step="1">
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Percentage of secondary sales transferred back to the original creator. Max 25%.</span>
+            </div>
+
+            <!-- Custom Attributes Form Segment -->
+            <div class="form-group">
+              <label style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Attributes / Properties</span>
+                <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" id="add-attribute-btn">
+                  <i class="fa-solid fa-plus"></i> Add Attribute
+                </button>
+              </label>
+              <div id="attributes-container" style="margin-top: 12px;">
+                <!-- Dynamically added attributes rows -->
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; margin-top: 12px;" id="submit-mint-btn">
+              <i class="fa-solid fa-hammer"></i> Mint & List Asset
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Minting Progress Modal -->
+  <div class="modal-overlay" id="minting-modal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Minting on Ethereum</h3>
+      </div>
+      <div class="tx-progress-box" style="display: block; margin-top: 0;">
+        <div class="tx-loader"></div>
+        <h4 class="tx-status-text" id="minting-status-label">Simulating contract call...</h4>
+        <div class="tx-progress-bar">
+          <div class="tx-progress-fill" id="minting-progress-bar-fill" style="width: 10%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-logo-block">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><i class="fa-solid fa-cloud-bolt"></i></div>
+          AetherMarket
+        </a>
+        <p>The world's premium digital art marketplace for non-fungible tokens. Discover and collect unique digital assets.</p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Marketplace</h5>
+        <ul>
+          <li><a href="explore.html">All NFTs</a></li>
+          <li><a href="explore.html?category=art">Digital Art</a></li>
+          <li><a href="explore.html?category=gaming">Gaming</a></li>
+          <li><a href="explore.html?category=collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Gas Calculator</a></li>
+          <li><a href="#">Developer API</a></li>
+          <li><a href="#">Platform Stats</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press Kit</a></li>
+          <li><a href="#">Contact Support</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>&copy; 2026 AetherMarket. All rights reserved.</p>
+      <div class="social-links">
+        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#"><i class="fa-brands fa-discord"></i></a>
+        <a href="#"><i class="fa-brands fa-telegram"></i></a>
+        <a href="#"><i class="fa-brands fa-github"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const wallet = window.Marketplace.getWallet();
+      const warningBox = document.getElementById("connect-warning-box");
+      const mintForm = document.getElementById("mint-nft-form");
+
+      // Verify wallet connection
+      if (wallet.connected) {
+        warningBox.style.display = "none";
+        mintForm.style.display = "block";
+      } else {
+        warningBox.style.display = "flex";
+        mintForm.style.display = "none";
+      }
+
+      // Drag and Drop Zone Interaction
+      const dropzone = document.getElementById("file-dropzone");
+      const fileInput = document.getElementById("nft-file-input");
+      const previewImg = document.getElementById("file-preview-img");
+      let base64ImageString = ""; // Store Base64 asset
+
+      dropzone.addEventListener("click", () => fileInput.click());
+
+      dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = "var(--accent-cyan)";
+      });
+
+      dropzone.addEventListener("dragleave", () => {
+        dropzone.style.borderColor = "var(--glass-border)";
+      });
+
+      dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = "var(--glass-border)";
+        if (e.dataTransfer.files.length > 0) {
+          handleFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files.length > 0) {
+          handleFile(e.target.files[0]);
+        }
+      });
+
+      function handleFile(file) {
+        if (!file.type.startsWith("image/")) {
+          alert("Please upload image file types only.");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          base64ImageString = event.target.result;
+          previewImg.src = base64ImageString;
+          previewImg.style.display = "block";
+          document.getElementById("file-error").style.display = "none";
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // Attributes Builder
+      const attributesContainer = document.getElementById("attributes-container");
+      const addAttrBtn = document.getElementById("add-attribute-btn");
+
+      addAttrBtn.addEventListener("click", () => {
+        const row = document.createElement("div");
+        row.className = "attribute-row";
+        row.innerHTML = `
+          <input type="text" class="form-control attr-key-input" placeholder="e.g. Color" style="padding: 10px;" required>
+          <input type="text" class="form-control attr-val-input" placeholder="e.g. Cyber Red" style="padding: 10px;" required>
+          <button type="button" class="btn btn-secondary delete-attr-btn" style="padding: 0; color: var(--accent-pink); border-color: rgba(244, 63, 94, 0.2);">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        `;
+
+        row.querySelector(".delete-attr-btn").addEventListener("click", () => {
+          row.remove();
+        });
+
+        attributesContainer.appendChild(row);
+      });
+
+      // Submit Mint Form with Sim Tx Modal
+      const modal = document.getElementById("minting-modal");
+      const statusLabel = document.getElementById("minting-status-label");
+      const barFill = document.getElementById("minting-progress-bar-fill");
+
+      mintForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        if (!base64ImageString) {
+          document.getElementById("file-error").style.display = "block";
+          document.getElementById("file-dropzone").scrollIntoView({ behavior: "smooth" });
+          return;
+        }
+
+        const title = document.getElementById("nft-title").value.trim();
+        const description = document.getElementById("nft-description").value.trim();
+        const price = document.getElementById("nft-price").value.trim();
+        const category = document.getElementById("nft-category").value;
+        const royalty = document.getElementById("nft-royalty").value || 0;
+
+        // Parse attributes
+        const attributes = [];
+        const attrKeys = document.querySelectorAll(".attr-key-input");
+        const attrVals = document.querySelectorAll(".attr-val-input");
+
+        for (let i = 0; i < attrKeys.length; i++) {
+          attributes.push({
+            trait_type: attrKeys[i].value.trim(),
+            value: attrVals[i].value.trim()
+          });
+        }
+
+        // Display transaction simulator modal
+        modal.style.display = "flex";
+
+        function updateProgress(text, pct) {
+          statusLabel.textContent = text;
+          barFill.style.width = pct + "%";
+        }
+
+        // Step 1: Request signatures
+        updateProgress("Requesting Metamask message signature...", 15);
+
+        setTimeout(() => {
+          // Step 2: Upload metadata
+          updateProgress("Uploading metadata to Decentralized IPFS Storage...", 45);
+
+          setTimeout(() => {
+            // Step 3: Gas calculation and execution
+            updateProgress("Broadcasting to ERC-721 Contract: Minting asset...", 75);
+
+            setTimeout(() => {
+              // Complete Minting and Save
+              const newNFT = window.Marketplace.mintNFT(
+                title, 
+                description, 
+                price, 
+                category, 
+                base64ImageString, 
+                attributes, 
+                royalty
+              );
+
+              if (newNFT) {
+                updateProgress("Transaction Confirmed! Block inclusion verified.", 100);
+                
+                // Explode Confetti!
+                confetti({
+                  particleCount: 150,
+                  spread: 80,
+                  origin: { y: 0.6 }
+                });
+
+                // Redirect to profile page after 2 seconds
+                setTimeout(() => {
+                  window.location.href = "profile.html";
+                }, 2000);
+              } else {
+                modal.style.display = "none";
+                alert("Minting failed. Please check your wallet status.");
+              }
+            }, 1200);
+          }, 1200);
+        }, 1200);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creator Dashboard | AetherMarket</title>
+  <meta name="description" content="View your collected assets, creation log, liked items, and manage your Web3 wallet address.">
+  <link rel="stylesheet" href="app.css">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-container">
+      <a href="index.html" class="logo">
+        <div class="logo-icon"><i class="fa-solid fa-cloud-bolt"></i></div>
+        AetherMarket
+      </a>
+
+      <div class="search-wrapper">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search items, collections, and accounts..." class="search-input global-search-input">
+      </div>
+
+      <nav class="nav-menu" id="nav-menu">
+        <a href="explore.html" class="nav-link">Explore</a>
+        <a href="create.html" class="nav-link">Create</a>
+        <a href="profile.html" class="nav-link active">Profile</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn btn-primary" id="wallet-connect-btn">
+          <i class="fa-solid fa-wallet"></i> Connect Wallet
+        </button>
+
+        <div class="wallet-badge" id="wallet-details" style="display: none;">
+          <div class="wallet-info">
+            <span class="wallet-address" id="wallet-address-display">0x0000...0000</span>
+            <span class="wallet-balance" id="wallet-balance-display">0.00 ETH</span>
+          </div>
+          <a href="profile.html">
+            <div class="wallet-avatar"></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Profile Banner -->
+  <div class="profile-banner">
+    <div class="profile-avatar-container">
+      <div class="profile-avatar-img"></div>
+    </div>
+  </div>
+
+  <!-- Main Profile Section -->
+  <section class="section" style="padding-top: 20px;">
+    <div class="container">
+      
+      <!-- Wallet Not Connected View -->
+      <div id="profile-disconnected-card" style="display: none; text-align: center; padding: 60px 0; border: 1px dashed var(--glass-border); border-radius: var(--border-radius-lg); background: var(--bg-secondary);">
+        <i class="fa-solid fa-wallet" style="font-size: 3.5rem; color: var(--text-muted); margin-bottom: 24px;"></i>
+        <h2 style="font-family: var(--font-display); font-size: 1.8rem;">Profile Disconnected</h2>
+        <p style="color: var(--text-secondary); margin-top: 8px;">Please connect your Web3 wallet to access your creator dashboard, collected items, and transactions.</p>
+        <button class="btn btn-primary" style="margin-top: 24px;" onclick="window.Marketplace.connectWallet()">
+          <i class="fa-solid fa-plug"></i> Connect Metamask
+        </button>
+      </div>
+
+      <!-- Wallet Connected View -->
+      <div id="profile-connected-content" style="display: none;">
+        
+        <div class="profile-info-block">
+          <!-- Left Main Block -->
+          <div>
+            <div class="profile-desc">
+              <h2>Unnamed Collector</h2>
+              <div class="profile-address" id="profile-address-btn" title="Click to copy mock address">
+                <i class="fa-brands fa-ethereum"></i>
+                <span id="profile-address-text">0x0000...0000</span>
+                <i class="fa-regular fa-copy" style="font-size: 0.85rem;"></i>
+              </div>
+              <p style="color: var(--text-secondary); font-size: 0.95rem; max-width: 600px;">
+                Ecosystem explorer. Collecting premium cybernetic constructs, cosmic relics, and digital assets. Welcome to my showcase of non-fungible collectibles.
+              </p>
+            </div>
+
+            <!-- Dashboard Tabs -->
+            <div class="profile-tabs">
+              <button class="tab-btn active" data-tab="collected">Collected (<span id="count-collected">0</span>)</button>
+              <button class="tab-btn" data-tab="created">Created (<span id="count-created">0</span>)</button>
+              <button class="tab-btn" data-tab="favorited">Favorited (<span id="count-favorited">0</span>)</button>
+            </div>
+
+            <!-- Tab Content (Grid) -->
+            <div class="nft-grid" id="profile-items-grid">
+              <!-- Render items dynamically -->
+            </div>
+          </div>
+
+          <!-- Right Sidebar Stats & Utilities -->
+          <aside class="profile-wallet-card">
+            <h3 style="font-family: var(--font-display); font-weight: 700; margin-bottom: 16px;">Wallet Details</h3>
+            
+            <div style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); padding: 20px; border-radius: var(--border-radius-md); margin-bottom: 24px; text-align: left;">
+              <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px;">Network</span>
+              <span style="font-size: 0.95rem; font-weight: 700; color: var(--accent-neon); display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                <i class="fa-solid fa-circle" style="font-size: 0.6rem; animation: pulse 1.5s infinite;"></i> Ethereum Mainnet
+              </span>
+
+              <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px;">Total Balance</span>
+              <strong style="font-family: var(--font-display); font-size: 1.8rem; display: block; color: white;" id="profile-wallet-eth">0.00 ETH</strong>
+              <span style="font-size: 0.9rem; color: var(--text-secondary);" id="profile-wallet-usd">$0.00 USD</span>
+            </div>
+
+            <!-- Faucet Button -->
+            <button class="btn btn-secondary" style="width: 100%; margin-bottom: 12px; border-color: var(--accent-cyan); color: var(--accent-cyan);" id="faucet-btn">
+              <i class="fa-solid fa-faucet-drip"></i> Request 10 Mock ETH
+            </button>
+
+            <!-- Disconnect Button -->
+            <button class="btn btn-secondary" style="width: 100%; border-color: rgba(244, 63, 94, 0.2); color: var(--accent-pink);" id="disconnect-wallet-btn-main">
+              <i class="fa-solid fa-power-off"></i> Disconnect Wallet
+            </button>
+          </aside>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-logo-block">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><i class="fa-solid fa-cloud-bolt"></i></div>
+          AetherMarket
+        </a>
+        <p>The world's premium digital art marketplace for non-fungible tokens. Discover and collect unique digital assets.</p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Marketplace</h5>
+        <ul>
+          <li><a href="explore.html">All NFTs</a></li>
+          <li><a href="explore.html?category=art">Digital Art</a></li>
+          <li><a href="explore.html?category=gaming">Gaming</a></li>
+          <li><a href="explore.html?category=collectibles">Collectibles</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Gas Calculator</a></li>
+          <li><a href="#">Developer API</a></li>
+          <li><a href="#">Platform Stats</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press Kit</a></li>
+          <li><a href="#">Contact Support</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>&copy; 2026 AetherMarket. All rights reserved.</p>
+      <div class="social-links">
+        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#"><i class="fa-brands fa-discord"></i></a>
+        <a href="#"><i class="fa-brands fa-telegram"></i></a>
+        <a href="#"><i class="fa-brands fa-github"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const wallet = window.Marketplace.getWallet();
+      const discCard = document.getElementById("profile-disconnected-card");
+      const connContent = document.getElementById("profile-connected-content");
+
+      // Verify connection
+      if (!wallet.connected) {
+        discCard.style.display = "block";
+        connContent.style.display = "none";
+        return;
+      } else {
+        discCard.style.display = "none";
+        connContent.style.display = "block";
+      }
+
+      // Populate layout
+      document.getElementById("profile-address-text").textContent = wallet.address;
+      document.getElementById("profile-wallet-eth").textContent = wallet.balanceETH.toFixed(4) + " ETH";
+      document.getElementById("profile-wallet-usd").textContent = `$${(wallet.balanceETH * window.Marketplace.ETH_USD_RATE).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
+
+      // Copy Mock Address to Clipboard
+      const addrBtn = document.getElementById("profile-address-btn");
+      addrBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(wallet.address).then(() => {
+          alert("Copied address: " + wallet.address);
+        }).catch(err => {
+          console.error("Copy failed", err);
+        });
+      });
+
+      // Tab Swapping Logic
+      const tabs = document.querySelectorAll(".tab-btn");
+      const grid = document.getElementById("profile-items-grid");
+      let activeTab = "collected";
+
+      function renderGrid() {
+        if (!grid) return;
+        grid.innerHTML = "";
+
+        const nfts = window.Marketplace.getNFTs();
+        let list = [];
+
+        if (activeTab === "collected") {
+          // owned by current wallet
+          list = nfts.filter(n => n.owner.toLowerCase() === wallet.address.toLowerCase());
+        } else if (activeTab === "created") {
+          // creator is current wallet
+          list = nfts.filter(n => n.creator.toLowerCase() === wallet.address.toLowerCase());
+        } else if (activeTab === "favorited") {
+          // liked by current wallet
+          list = nfts.filter(n => n.likedBy && n.likedBy.includes(wallet.address));
+        }
+
+        // Render card items
+        list.forEach(nft => {
+          const isLiked = nft.likedBy && nft.likedBy.includes(wallet.address);
+          const card = document.createElement("div");
+          card.className = "nft-card";
+          card.innerHTML = `
+            <div class="card-img-wrapper" style="cursor: pointer;" onclick="window.location.href='item.html?id=${nft.id}'">
+              <img src="${nft.image}" alt="${nft.title}" class="card-img">
+            </div>
+            <button class="like-btn ${isLiked ? 'liked' : ''}" data-id="${nft.id}">
+              <i class="fa-${isLiked ? 'solid' : 'regular'} fa-heart"></i>
+              <span>${nft.likes || 0}</span>
+            </button>
+            <div class="card-body">
+              <span class="card-tag">${nft.category}</span>
+              <h3 class="card-title" style="cursor: pointer;" onclick="window.location.href='item.html?id=${nft.id}'">${nft.title}</h3>
+              <div class="card-meta">
+                <div class="card-creator">
+                  <div class="creator-avatar"></div>
+                  <span class="creator-name">${window.Marketplace.formatAddress(nft.creator)}</span>
+                </div>
+                <div class="card-price">
+                  <label>Price</label>
+                  <span>${nft.price.toFixed(2)} ETH</span>
+                </div>
+              </div>
+            </div>
+          `;
+
+          // Bind like click
+          card.querySelector(".like-btn").addEventListener("click", (e) => {
+            e.stopPropagation();
+            const result = window.Marketplace.likeNFT(nft.id);
+            if (result) {
+              updateTabCounts();
+              renderGrid();
+            }
+          });
+
+          grid.appendChild(card);
+        });
+
+        if (list.length === 0) {
+          grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px 0; border: 1px dashed var(--glass-border); border-radius: var(--border-radius-md);">
+              <i class="fa-regular fa-folder-closed" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 12px;"></i>
+              <h4 style="font-family: var(--font-display); font-size: 1.15rem; margin-bottom: 4px;">No items here yet</h4>
+              <p style="color: var(--text-muted); font-size: 0.85rem;">This segment is currently empty.</p>
+            </div>
+          `;
+        }
+      }
+
+      function updateTabCounts() {
+        const nfts = window.Marketplace.getNFTs();
+        
+        const countColl = nfts.filter(n => n.owner.toLowerCase() === wallet.address.toLowerCase()).length;
+        const countCre = nfts.filter(n => n.creator.toLowerCase() === wallet.address.toLowerCase()).length;
+        const countFav = nfts.filter(n => n.likedBy && n.likedBy.includes(wallet.address)).length;
+
+        document.getElementById("count-collected").textContent = countColl;
+        document.getElementById("count-created").textContent = countCre;
+        document.getElementById("count-favorited").textContent = countFav;
+      }
+
+      // Bind tab buttons
+      tabs.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          tabs.forEach(t => t.classList.remove("active"));
+          btn.classList.add("active");
+          activeTab = btn.getAttribute("data-tab");
+          renderGrid();
+        });
+      });
+
+      // Faucet handler
+      const faucetBtn = document.getElementById("faucet-btn");
+      faucetBtn.addEventListener("click", () => {
+        wallet.balanceETH += 10.0;
+        window.Marketplace.saveWallet(wallet);
+        
+        // update header & details immediately
+        window.Marketplace.updateHeaderUI();
+        document.getElementById("profile-wallet-eth").textContent = wallet.balanceETH.toFixed(4) + " ETH";
+        document.getElementById("profile-wallet-usd").textContent = `$${(wallet.balanceETH * window.Marketplace.ETH_USD_RATE).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
+
+        alert("Faucet: 10 Mock ETH loaded to your wallet balance!");
+      });
+
+      // Disconnect buttons
+      const discBtn = document.getElementById("disconnect-wallet-btn-main");
+      discBtn.addEventListener("click", () => {
+        window.Marketplace.disconnectWallet();
+      });
+
+      // Initial Render
+      updateTabCounts();
+      renderGrid();
+    });
+  </script>
+</body>
+</html>
