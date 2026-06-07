@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('SSH Test') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'prod-eks-cluster-vm',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no \
+                        -o UserKnownHostsFile=/dev/null \
+                        -i $SSH_KEY \
+                        $SSH_USER@20.219.123.172 \
+                        "hostname"
+                    '''
+                }
+            }
+        }
+    }
+}

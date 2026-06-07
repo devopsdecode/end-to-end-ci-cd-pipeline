@@ -1,0 +1,43 @@
+node {
+
+    stage('Deploy to Kubernetes') {
+
+        withCredentials([
+            sshUserPrivateKey(
+                credentialsId: 'prod-eks-cluster-vm',
+                keyFileVariable: 'SSH_KEY',
+                usernameVariable: 'SSH_USER'
+            )
+        ]) {
+
+            sh """
+            ssh \
+                -o StrictHostKeyChecking=no \
+                -o UserKnownHostsFile=/dev/null \
+                -i \$SSH_KEY \
+                \$SSH_USER@20.219.123.172 '
+                    set -e
+
+                    rm -rf /tmp/end-to-end-ci-cd-pipeline
+
+                    git clone https://github.com/devopsdecode/end-to-end-ci-cd-pipeline.git \
+                        /tmp/end-to-end-ci-cd-pipeline
+
+                    kubectl apply -f /tmp/end-to-end-ci-cd-pipeline/k8s/deployment.yml
+
+                    kubectl apply -f /tmp/end-to-end-ci-cd-pipeline/k8s/services.yml
+
+                    kubectl rollout restart deployment/nfts-deployment
+
+                    kubectl rollout status deployment/nfts-deployment --timeout=300s
+
+                    kubectl get deployments
+
+                    kubectl get pods -o wide
+
+                    kubectl get svc
+                '
+            """
+        }
+    }
+}
