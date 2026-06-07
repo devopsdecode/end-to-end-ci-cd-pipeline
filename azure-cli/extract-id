@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# This script helps you extract the correct Azure AD / Entra ID identifiers
+# for your Terraform service principal authentication.
+
+echo "=== Current Azure Account Info ==="
+az account show --query "{subscriptionId:id, tenantId:tenantId}" --output json
+
+echo ""
+echo "=== Your Service Principals and App IDs (Client IDs) ==="
+echo "Note: The Application ID (appId) is the UUID you should use for ARM_CLIENT_ID."
+echo "The secret (password) created during 'az ad sp create-for-rbac' is for ARM_CLIENT_SECRET."
+echo ""
+az ad sp list --show-mine --query "[].{displayName:displayName, appId:appId}" --output table

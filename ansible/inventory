@@ -1,0 +1,5 @@
+[master-server]
+104.211.205.156
+[master-server:vars]
+ansible_ssh_user=azureuser
+ansible_ssh_private_key_file=/Users/rajnadar/Downloads/jan-end-to-end-project_key.pem

@@ -1,0 +1,167 @@
+---
+- hosts: master-server
+  become: yes
+  tasks:
+
+    # --- System Prerequisites ---
+    - name: Update APT package cache
+      apt:
+        update_cache: yes
+
+    - name: Install required system dependencies
+      apt:
+        name:
+          - wget
+          - curl
+          - gnupg
+          - ca-certificates
+          - software-properties-common
+          - fontconfig
+        state: present
+
+    - name: Install Java 21 (required by Jenkins 2.463+)
+      apt:
+        name: openjdk-21-jre
+        state: present
+
+    - name: Get JAVA_HOME path
+      shell: dirname $(dirname $(readlink -f $(which java)))
+      register: java_home_path
+      changed_when: false
+
+    - name: Set JAVA_HOME in /etc/environment
+      lineinfile:
+        path: /etc/environment
+        regexp: '^JAVA_HOME='
+        line: "JAVA_HOME={{ java_home_path.stdout }}"
+        state: present
+
+    - name: Configure JAVA_HOME for Jenkins service
+      lineinfile:
+        path: /etc/default/jenkins
+        regexp: '^JAVA='
+        line: "JAVA={{ java_home_path.stdout }}/bin/java"
+        state: present
+        create: yes
+
+    # --- Jenkins Installation ---
+    - name: Ensure /etc/apt/keyrings directory exists
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Download Jenkins GPG signing key
+      get_url:
+        url: https://pkg.jenkins.io/debian/jenkins.io-2026.key
+        dest: /etc/apt/keyrings/jenkins-keyring.asc
+        owner: root
+        group: root
+        mode: '0644'
+        force: yes
+
+    - name: Add Jenkins APT repository
+      copy:
+        dest: /etc/apt/sources.list.d/jenkins.list
+        content: "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/\n"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Update APT cache after adding Jenkins repo
+      apt:
+        update_cache: yes
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+
+    - name: Ensure Jenkins service is started and enabled
+      systemd:
+        name: jenkins
+        state: started
+        enabled: yes
+
+    - name: Capture Jenkins journal log (for diagnostics)
+      shell: journalctl -n 30 -u jenkins.service --no-pager
+      register: jenkins_journal
+      changed_when: false
+      failed_when: false
+
+    - name: Print Jenkins journal output
+      debug:
+        msg: "{{ jenkins_journal.stdout_lines }}"
+    # # --- Jenkins Installation Setup ---
+    # - name: Install Jenkins GPG key (atomic curl | gpg --dearmor pipeline)
+    #   shell: |
+    #     curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | \
+    #     gpg --dearmor -o /usr/share/keyrings/jenkins-keyring.gpg
+    #   args:
+    #     executable: /bin/bash
+
+    # - name: Set permissions on Jenkins keyring
+    #   file:
+    #     path: /usr/share/keyrings/jenkins-keyring.gpg
+    #     owner: root
+    #     group: root
+    #     mode: '0644'
+
+    # - name: Add Jenkins APT repository entry
+    #   copy:
+    #     dest: /etc/apt/sources.list.d/jenkins.list
+    #     content: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.gpg] https://pkg.jenkins.io/debian-stable binary/\n"
+    #     owner: root
+    #     group: root
+    #     mode: '0644'
+
+    # - name: Update APT cache after adding Jenkins repo
+    #   apt:
+    #     update_cache: yes
+
+    # - name: Install Jenkins server
+    #   apt:
+    #     name: jenkins
+    #     state: present
+
+    # - name: Ensure Jenkins service is started and enabled
+    #   systemd:
+    #     name: jenkins
+    #     state: started
+    #     enabled: yes
+
+    # --- Terraform Installation Setup ---
+    # - name: Download HashiCorp GPG key
+    #   get_url:
+    #     url: https://apt.releases.hashicorp.com/gpg
+    #     dest: /tmp/hashicorp.gpg
+    #     mode: '0644'
+
+    # - name: Dearmor HashiCorp GPG key
+    #   shell: gpg --dearmor < /tmp/hashicorp.gpg > /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    #   args:
+    #     creates: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+    # - name: Add HashiCorp APT Repository
+    #   apt_repository:
+    #     repo: "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+    #     state: present
+    #     filename: hashicorp
+
+    # - name: Install Terraform on Ubuntu server
+    #   apt:
+    #     name: terraform
+    #     state: present
+    #     update_cache: yes
+
+    # # --- Ansible Installation ---
+    # - name: Install Ansible
+    #   apt:
+    #     name: ansible
+    #     state: present
